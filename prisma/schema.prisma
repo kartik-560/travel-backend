@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Trip {
+  id                 String           @id @default(auto()) @map("_id") @db.ObjectId
+  title              String
+  subTitle           String
+  maxElevation       String
+  duration           String
+  distance           String
+  difficulty         String
+  startPoint         String
+  endPoint           String
+  travel_description String
+
+  highlights         String[]
+  images             String[]
+  category String?  
+
+  whatToExpect       WhatToExpect[]
+  days               TripDay[]
+
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+}
+
+model WhatToExpect {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  tripId            String   @db.ObjectId
+  trip              Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  expect_title      String
+  expect_description String
+}
+
+model TripDay {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  tripId      String   @db.ObjectId
+  trip        Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  day         Int
+  description String
+  distance    String
+  duration    String
+  highlights  String[]
+}
+
+
+
