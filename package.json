@@ -12,7 +12,8 @@
     "cors": "^2.8.5",
     "dotenv": "^17.1.0",
     "express": "^5.1.0",
-    "mongodb": "^6.17.0"
+    "mongodb": "^6.17.0",
+    "nodemailer": "^7.0.5"
   },
   "devDependencies": {
     "prisma": "^6.11.1"

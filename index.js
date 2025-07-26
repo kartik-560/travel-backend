@@ -2,10 +2,12 @@ import express, { json } from "express";
 import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 import tripsRoute from "./routes/trips.js";
+import dotenv from "dotenv";
 const app = express();
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
+dotenv.config();
 const prisma = new PrismaClient();
 
 
