@@ -70,13 +70,13 @@ router.post("/contact", async (req, res) => {
   console.error("❌ Missing field(s)", { name, email, phone, message });
 }
   try {
-    // Save form data to DB
+   
     const savedForm = await prisma.contactFormSubmission.create({
       data: { name, email, phone,message },
     });
     console.log("✅ Contact form saved to DB");
 
-    // Configure email transport
+   
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -88,7 +88,7 @@ router.post("/contact", async (req, res) => {
     // Email content
     const mailOptions = {
       from: process.env.SMTP_USER,
-      to: "kartikkanzode@gmail.com", // change to your target inbox
+      to: "kartikkanzode@gmail.com",
       subject: "New Travel Consultation Request",
       html: `
         <h3>New Contact Form Submission</h3>
