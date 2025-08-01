@@ -49,7 +49,6 @@ model TripDay {
   highlights  String[]
 }
 
-
 model ContactFormSubmission {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
@@ -57,4 +56,11 @@ model ContactFormSubmission {
     phone     String?
   message   String
   createdAt DateTime @default(now())
+}
+
+model PhotoGallery {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  title      String?
+  images     String[] 
+  uploadedAt DateTime @default(now())
 }

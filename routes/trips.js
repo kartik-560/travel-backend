@@ -17,7 +17,7 @@ router.get("/contact", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch contact submissions" });
   }
 });
-//  ObjectID Validator (MongoDB)
+
 function isValidObjectId(id) {
   return /^[0-9a-fA-F]{24}$/.test(id);
 }
@@ -45,23 +45,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// router.post("/contact", async (req, res) => {
-//   const { name, email, message } = req.body;
 
-//   console.log("📩 Contact form received:", { name, email, message });
-
-//   try {
-//     const savedForm = await prisma.contactFormSubmission.create({
-//       data: { name, email, message },
-//     });
-
-//     console.log("✅ Saved to DB:", savedForm);
-//     res.status(201).json({ message: "Form submitted successfully", data: savedForm });
-//   } catch (err) {
-//     console.error("❌ DB Save Error:", err.message, err);
-//     res.status(500).json({ error: "Failed to save contact form" });
-//   }
-// });
 router.post("/contact", async (req, res) => {
   const { name, email, phone,message, } = req.body;
   console.log("📩 Contact form submission received:", { name, email,phone, message, });
@@ -85,7 +69,6 @@ router.post("/contact", async (req, res) => {
       },
     });
 
-    // Email content
     const mailOptions = {
       from: process.env.SMTP_USER,
       to: "kartikkanzode@gmail.com",
@@ -109,10 +92,8 @@ router.post("/contact", async (req, res) => {
   }
 });
 
-
 router.get("/:id", validateObjectId, async (req, res) => {
   const { id } = req.params;
-
   try {
     const trip = await prisma.trip.findUnique({
       where: { id },
@@ -133,7 +114,6 @@ router.get("/:id", validateObjectId, async (req, res) => {
   }
 });
 
-// ✅ POST create a new trip
 router.post("/", async (req, res) => {
   try {
     const {
@@ -148,7 +128,7 @@ router.post("/", async (req, res) => {
       travel_description,
       highlights,
       images,
-      category, // <-- add this
+      category, 
       what_to_expect,
       days,
     } = req.body;
@@ -193,7 +173,6 @@ router.post("/", async (req, res) => {
   }
 });
 
-// ✅ PUT update a trip by ID (with validation)
 router.put("/:id", validateObjectId, async (req, res) => {
   const { id } = req.params;
 
@@ -275,9 +254,5 @@ router.delete("/:id", validateObjectId, async (req, res) => {
     res.status(500).json({ error: "Failed to delete trip" });
   }
 });
-
-
-
-
 
 export default router;
