@@ -40,7 +40,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// DELETE a photo gallery by ID
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -78,4 +77,22 @@ router.put('/:id', async (req, res) => {
 });
 
 
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const gallery = await prisma.photoGallery.findUnique({
+      where: { id },
+    });
+
+    if (!gallery) {
+      return res.status(404).json({ message: 'Gallery not found' });
+    }
+
+    res.json(gallery);
+  } catch (err) {
+    console.error('Fetch by ID error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 export default router;
