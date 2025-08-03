@@ -40,4 +40,42 @@ router.get('/', async (req, res) => {
   }
 });
 
+// DELETE a photo gallery by ID
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deleted = await prisma.photoGallery.delete({
+      where: { id },
+    });
+
+    res.status(200).json({ message: 'Gallery deleted', deleted });
+  } catch (err) {
+    console.error('Delete error:', err);
+    res.status(500).json({ message: 'Delete failed' });
+  }
+});
+
+// PUT (Update) a photo gallery by ID
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  const { title, images } = req.body;
+
+  try {
+    const updated = await prisma.photoGallery.update({
+      where: { id },
+      data: {
+        ...(title && { title }),
+        ...(images && Array.isArray(images) && images.length > 0 && { images }),
+      },
+    });
+
+    res.status(200).json({ message: 'Gallery updated', updated });
+  } catch (err) {
+    console.error('Update error:', err);
+    res.status(500).json({ message: 'Update failed' });
+  }
+});
+
+
 export default router;
