@@ -64,3 +64,15 @@ model PhotoGallery {
   images     String[] 
   uploadedAt DateTime @default(now())
 }
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  name      String?
+  password  String   // plain text for Basic Auth (swap to hashing later if you wish)
+  role      String   @default("USER") // "ADMIN" or "USER"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([role])
+}

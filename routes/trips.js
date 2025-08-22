@@ -45,22 +45,24 @@ router.get("/", async (req, res) => {
   }
 });
 
-
 router.post("/contact", async (req, res) => {
-  const { name, email, phone,message, } = req.body;
-  console.log("📩 Contact form submission received:", { name, email,phone, message, });
+  const { name, email, phone, message } = req.body;
+  console.log("📩 Contact form submission received:", {
+    name,
+    email,
+    phone,
+    message,
+  });
 
   if (!name || !email || !phone || !message) {
-  console.error("❌ Missing field(s)", { name, email, phone, message });
-}
+    console.error("❌ Missing field(s)", { name, email, phone, message });
+  }
   try {
-   
     const savedForm = await prisma.contactFormSubmission.create({
-      data: { name, email, phone,message },
+      data: { name, email, phone, message },
     });
     console.log("✅ Contact form saved to DB");
 
-   
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -128,7 +130,7 @@ router.post("/", async (req, res) => {
       travel_description,
       highlights,
       images,
-      category, 
+      category,
       what_to_expect,
       days,
     } = req.body;
@@ -198,6 +200,8 @@ router.put("/:id", validateObjectId, async (req, res) => {
       category,
     } = req.body;
 
+    const expectList = Array.isArray(what_to_expect) ? what_to_expect : [];
+    const dayList = Array.isArray(days) ? days : [];
     const updatedTrip = await prisma.trip.update({
       where: { id },
       data: {
@@ -214,15 +218,24 @@ router.put("/:id", validateObjectId, async (req, res) => {
         images,
         category,
         whatToExpect: {
-          create: what_to_expect,
+          create: expectList.map((x) => ({
+            expect_title: x.expect_title ?? "",
+            expect_description: x.expect_description ?? "",
+          })),
         },
         days: {
-          create: days.map((d) => ({
-            day: d.day,
-            description: d.description,
-            distance: d.distance,
-            duration: d.duration,
-            highlights: d.highlights,
+          create: dayList.map((d) => ({
+            day: Number.isFinite(+d.day) ? +d.day : 0,
+            description: d.description ?? "",
+            distance: d.distance ?? "",
+            duration: d.duration ?? "",
+            highlights: Array.isArray(d.highlights)
+              ? d.highlights
+              : d.highlights
+              ? String(d.highlights)
+                  .split(",")
+                  .map((s) => s.trim())
+              : [],
           })),
         },
       },
