@@ -13,12 +13,14 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 dotenv.config();
 const prisma = new PrismaClient();
 
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN?.split(",").map((s) => s.trim()) || "*",
+    credentials: true,
+  })
+);
 
-app.use(cors({
-  origin: process.env.CORS_ORIGIN?.split(",").map(s => s.trim()) || "*",
-  credentials: true
-}));
-app.use(json());
+
 
 const WRITE_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 function protectWrites(req, res, next) {
