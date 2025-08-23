@@ -1,5 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import prisma from "../lib/prisma.js";
 
 function unauthorized(res) {
   res.setHeader("WWW-Authenticate", 'Basic realm="Restricted", charset="UTF-8"');
@@ -33,7 +32,7 @@ export async function basicAuth(req, res, next) {
     req.user = { id: user.id, email: user.email, name: user.name, role: user.role };
     next();
   } catch (e) {
-    console.error(e);
+    console.error("basicAuth error:", e);
     return unauthorized(res);
   }
 }
