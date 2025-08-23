@@ -1,10 +1,11 @@
-import express, { json } from "express";
+import express from "express";
 import cors from "cors";
-import { PrismaClient } from "@prisma/client";
-import tripsRoute from "./routes/trips.js";
 import dotenv from "dotenv";
- import photosRoute from "./routes/photos.js";
- import { basicAuth, requireAdmin } from "./middleware/basicAuth.js";
+import authRouter from "./routes/auth.js";
+import tripsRoute from "./routes/trips.js";
+import photosRoute from "./routes/photos.js";
+import { basicAuth, requireAdmin } from "./middleware/basicAuth.js";
+
 const app = express();
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
