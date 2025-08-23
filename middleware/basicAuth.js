@@ -1,4 +1,4 @@
-import prisma from "../lib/prisma.js";
+import prisma from "../prisma.js";
 
 function unauthorized(res) {
   res.setHeader("WWW-Authenticate", 'Basic realm="Restricted", charset="UTF-8"');

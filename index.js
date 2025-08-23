@@ -5,13 +5,12 @@ import authRouter from "./routes/auth.js";
 import tripsRoute from "./routes/trips.js";
 import photosRoute from "./routes/photos.js";
 import { basicAuth, requireAdmin } from "./middleware/basicAuth.js";
-
 const app = express();
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 dotenv.config();
-const prisma = new PrismaClient();
+
 
 app.use(
   cors({
