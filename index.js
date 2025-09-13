@@ -12,12 +12,12 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 dotenv.config();
 
 
-app.use(
-  cors({
-    origin: process.env.CORS_ORIGIN?.split(",").map((s) => s.trim()) || "*",
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: process.env.CORS_ORIGIN?.split(",").map(s => s.trim()) || "*",
+  credentials: true,
+  methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
+  allowedHeaders: ["Content-Type","Authorization"],
+}));
 
 
 
@@ -29,7 +29,12 @@ function protectWrites(req, res, next) {
   return next();
 }
 app.use("/api/auth", authRouter);
-app.use("/api/trips", protectWrites, tripsRoute);
+app.use("/api/trips", (req, res, next) => {
+  if (req.method === "POST") {
+    return tripsRoute(req, res, next);
+  }
+  return protectWrites(req, res, next);
+}, tripsRoute);
 app.use("/api/photos", protectWrites, photosRoute);
 
 app.get("/", (req, res) => {
