@@ -22,14 +22,26 @@ export async function basicAuth(req, res, next) {
     if (i < 0) return unauthorized(res);
 
     const email = decoded.slice(0, i).trim();
-    const password = decoded.slice(i + 1);
+    const password = decoded.slice(i + 1).trim(); // ✅ trim password
 
     if (!email || !password) return unauthorized(res);
 
     const user = await prisma.user.findUnique({ where: { email } });
+
+    // Debug logs
+    console.log("Auth header:", header);
+    console.log("Decoded credentials:", { email, password });
+    console.log("User found:", user?.email);
+
     if (!user || user.password !== password) return unauthorized(res);
 
-    req.user = { id: user.id, email: user.email, name: user.name, role: user.role };
+    req.user = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    };
+
     next();
   } catch (e) {
     console.error("basicAuth error:", e);
@@ -37,6 +49,7 @@ export async function basicAuth(req, res, next) {
   }
 }
 
+// Optional: protect admin routes
 export function requireAdmin(req, res, next) {
   if (!req.user || req.user.role !== "ADMIN") {
     return res.status(403).json({ error: "forbidden" });

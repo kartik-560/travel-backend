@@ -1,6 +1,8 @@
 import express from 'express';
 import multer from 'multer';
 import { PrismaClient } from "@prisma/client";
+import { basicAuth, requireAdmin } from "../middleware/basicAuth.js";
+
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -40,7 +42,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', basicAuth, requireAdmin, async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -55,7 +57,7 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// PUT (Update) a photo gallery by ID
+
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
   const { title, images } = req.body;
