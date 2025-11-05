@@ -73,7 +73,7 @@ router.post("/contact", async (req, res) => {
 
     const mailOptions = {
       from: process.env.SMTP_USER,
-      to: "betterpackingindia@gmail.com",
+      to: "betterpackingindia@gmail.com  , betterbackpackingindia@gmail.com",
       subject: "New Travel Consultation Request",
       html: `
         <h3>New Contact Form Submission</h3>
