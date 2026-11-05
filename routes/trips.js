@@ -32,7 +32,19 @@ function validateObjectId(req, res, next) {
 
 router.get("/", async (req, res) => {
   try {
+    const { all } = req.query;
+    const where =
+      all === "true"
+        ? {}
+        : {
+            OR: [
+              { status: "PUBLISHED" },
+              { status: null },
+              { status: { isSet: false } },
+            ],
+          };
     const trips = await prisma.trip.findMany({
+      where,
       include: {
         whatToExpect: true,
         days: true,
@@ -131,6 +143,7 @@ router.post("/", async (req, res) => {
       highlights,
       images,
       category,
+      status,
       what_to_expect,
       days,
     } = req.body;
@@ -149,6 +162,7 @@ router.post("/", async (req, res) => {
         highlights,
         images,
         category, // <-- include in create
+        status: status || "PUBLISHED",
         whatToExpect: {
           create: what_to_expect,
         },
@@ -198,47 +212,54 @@ router.put("/:id", validateObjectId, async (req, res) => {
       what_to_expect,
       days,
       category,
+      status,
     } = req.body;
 
     const expectList = Array.isArray(what_to_expect) ? what_to_expect : [];
     const dayList = Array.isArray(days) ? days : [];
+    const updateData = {
+      title,
+      subTitle,
+      maxElevation,
+      duration,
+      distance,
+      difficulty,
+      startPoint,
+      endPoint,
+      travel_description,
+      highlights,
+      images,
+      category,
+      whatToExpect: {
+        create: expectList.map((x) => ({
+          expect_title: x.expect_title ?? "",
+          expect_description: x.expect_description ?? "",
+        })),
+      },
+      days: {
+        create: dayList.map((d) => ({
+          day: Number.isFinite(+d.day) ? +d.day : 0,
+          description: d.description ?? "",
+          distance: d.distance ?? "",
+          duration: d.duration ?? "",
+          highlights: Array.isArray(d.highlights)
+            ? d.highlights
+            : d.highlights
+            ? String(d.highlights)
+                .split(",")
+                .map((s) => s.trim())
+            : [],
+        })),
+      },
+    };
+
+    if (status !== undefined) {
+      updateData.status = status;
+    }
+
     const updatedTrip = await prisma.trip.update({
       where: { id },
-      data: {
-        title,
-        subTitle,
-        maxElevation,
-        duration,
-        distance,
-        difficulty,
-        startPoint,
-        endPoint,
-        travel_description,
-        highlights,
-        images,
-        category,
-        whatToExpect: {
-          create: expectList.map((x) => ({
-            expect_title: x.expect_title ?? "",
-            expect_description: x.expect_description ?? "",
-          })),
-        },
-        days: {
-          create: dayList.map((d) => ({
-            day: Number.isFinite(+d.day) ? +d.day : 0,
-            description: d.description ?? "",
-            distance: d.distance ?? "",
-            duration: d.duration ?? "",
-            highlights: Array.isArray(d.highlights)
-              ? d.highlights
-              : d.highlights
-              ? String(d.highlights)
-                  .split(",")
-                  .map((s) => s.trim())
-              : [],
-          })),
-        },
-      },
+      data: updateData,
       include: {
         whatToExpect: true,
         days: true,
@@ -249,6 +270,24 @@ router.put("/:id", validateObjectId, async (req, res) => {
   } catch (error) {
     console.error("❌ Error updating trip:", error);
     res.status(500).json({ error: "Failed to update trip", detail: error });
+  }
+});
+
+// Quick toggle status: PUBLISHED vs HIDDEN
+router.patch("/:id/status", validateObjectId, async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  try {
+    const updated = await prisma.trip.update({
+      where: { id },
+      data: {
+        status: status === "HIDDEN" ? "HIDDEN" : "PUBLISHED",
+      },
+    });
+    res.json(updated);
+  } catch (error) {
+    console.error("❌ Error updating trip status:", error);
+    res.status(500).json({ error: "Failed to update trip status" });
   }
 });
 

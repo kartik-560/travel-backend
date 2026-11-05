@@ -22,6 +22,7 @@ model Trip {
   highlights         String[]
   images             String[]
   category String?  
+  status             String?          @default("PUBLISHED") // "PUBLISHED" or "HIDDEN"
 
   whatToExpect       WhatToExpect[]
   days               TripDay[]
@@ -75,4 +76,26 @@ model User {
   updatedAt DateTime @updatedAt
 
   @@index([role])
+}
+
+model VisitorImpression {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  visitorId   String?  // anonymous client-generated persistent ID
+  path        String   @default("/") // e.g. "/", "/itinerary", "/aboutus"
+  referrer    String?  // e.g. "https://google.com" or "direct"
+  device      String?  // "mobile", "tablet", "desktop"
+  browser     String?  // "Chrome", "Safari", etc.
+  os          String?  // "Windows", "iOS", "Android", "macOS", etc.
+  ip          String?  // client IP or masked IP
+  timestamp   DateTime @default(now())
+
+  @@index([timestamp])
+  @@index([visitorId])
+  @@index([path])
+}
+
+model Category {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String   @unique
+  createdAt DateTime @default(now())
 }

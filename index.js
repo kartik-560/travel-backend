@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import authRouter from "./routes/auth.js";
 import tripsRoute from "./routes/trips.js";
 import photosRoute from "./routes/photos.js";
+import analyticsRoute from "./routes/analytics.js";
+import categoriesRoute from "./routes/categories.js";
 import { basicAuth, requireAdmin } from "./middleware/basicAuth.js";
 const app = express();
 app.use(express.json({ limit: "10mb" }));
@@ -29,6 +31,8 @@ function protectWrites(req, res, next) {
   return next();
 }
 app.use("/api/auth", authRouter);
+app.use("/api/analytics", analyticsRoute);
+app.use("/api/categories", protectWrites, categoriesRoute);
 app.use("/api/trips", (req, res, next) => {
   if (req.method === "POST") {
     return tripsRoute(req, res, next);
