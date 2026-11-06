@@ -99,3 +99,22 @@ model Category {
   name      String   @unique
   createdAt DateTime @default(now())
 }
+
+model Testimonial {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  role       String
+  category   String?  @default("Himalayas")
+  images     String[]
+  text       String
+  location   String
+  rating     Int      @default(5)
+  tag        String?
+  status     String?  @default("PUBLISHED") // "PUBLISHED" or "HIDDEN"
+  order      Int?     @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([status])
+  @@index([category])
+}

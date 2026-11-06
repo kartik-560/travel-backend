@@ -6,6 +6,7 @@ import tripsRoute from "./routes/trips.js";
 import photosRoute from "./routes/photos.js";
 import analyticsRoute from "./routes/analytics.js";
 import categoriesRoute from "./routes/categories.js";
+import testimonialsRoute from "./routes/testimonials.js";
 import sitemapRoute from "./routes/sitemap.js";
 import { basicAuth, requireAdmin } from "./middleware/basicAuth.js";
 const app = express();
@@ -34,6 +35,7 @@ function protectWrites(req, res, next) {
 app.use("/api/auth", authRouter);
 app.use("/api/analytics", analyticsRoute);
 app.use("/api/categories", protectWrites, categoriesRoute);
+app.use("/api/testimonials", protectWrites, testimonialsRoute);
 app.use("/api/trips", (req, res, next) => {
   if (req.method === "POST") {
     return tripsRoute(req, res, next);
