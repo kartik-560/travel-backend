@@ -6,6 +6,7 @@ import tripsRoute from "./routes/trips.js";
 import photosRoute from "./routes/photos.js";
 import analyticsRoute from "./routes/analytics.js";
 import categoriesRoute from "./routes/categories.js";
+import sitemapRoute from "./routes/sitemap.js";
 import { basicAuth, requireAdmin } from "./middleware/basicAuth.js";
 const app = express();
 app.use(express.json({ limit: "10mb" }));
@@ -40,6 +41,8 @@ app.use("/api/trips", (req, res, next) => {
   return protectWrites(req, res, next);
 }, tripsRoute);
 app.use("/api/photos", protectWrites, photosRoute);
+app.use("/api/sitemap.xml", sitemapRoute);
+app.use("/sitemap.xml", sitemapRoute);
 
 app.get("/", (req, res) => {
   res.send("✅ Travel API is running...");
